@@ -6,7 +6,7 @@ var T = new Twit(require('./config.js'));
 
 // This is the URL of a search for the latest tweets on the '#mediaarts' hashtag.
 var downtonAbbeySearch = {q: "#downtonabbey", count: 10, result_type: "mixed", lang: "en"}; 
-var robinpatbatinbat = {q: "Robert Pattinson", count: 10, result_type: "mixed", lang: "en" };
+var robinpatbatinbat = {q: "Robert Pattinson", count: 1, result_type: "mixed", lang: "en" };
 
 // This function randomly determines a hashtag from the above list, and retweets it.
 function retweetLatest() {
@@ -48,10 +48,13 @@ function loveRobPat(){
 	T.get('search/tweets', robinpatbatinbat, function(error, data){
 		console.log(error,data);
 		if(!error) {
-			var tweetId = data.id_str;
+			var tweetId = data.statuses[0].id_str;
 			var name = 'charIottewunder';
-			T.post('statuses/update', {in_reply_to_status_id: tweetId, status: 'Oh bless his heart... '
-		+ '@' + name + ' Will you keep sending me more tweets about my favorite man Robert Pattinson?'}, function(error, response) {
+			T.post('statuses/update', {
+				in_reply_to_status_id: tweetId, 
+				status: 'Oh bless his heart... ' + '@' + name + 
+				' Will you keep sending me more tweets about my favorite man Robert Pattinson?'}, 
+				function(error, response) {
 			if (response) {
 				console.log('Success! Check your bot, it should have retweeted something.')
 			}
