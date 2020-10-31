@@ -1,0 +1,19 @@
+{
+  "name": "twitbot",
+  "version": "1.0.0",
+  "description": "This is the bot attached to @margiebuns on twitter",
+  "main": "bot.js",
+  "dependencies": {
+    "twit": "^2.2.11"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "twit",
+    "bot"
+  ],
+  "author": "Chris McErlain",
+  "license": "ISC"
+}
