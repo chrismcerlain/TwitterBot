@@ -1,3 +1,11 @@
+# MargieBuns Bot
+To get started,
+run `npm install`
+then `node bot`
+And have fun!
+https://twitter.com/MargieBuns
+
+--------------------------------------
 #ExampleBot
 
 This bot retweets the latest tweet using the "#mediaarts" hashtag. It attempts to retweet once per hour.
