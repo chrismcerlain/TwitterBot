@@ -182,7 +182,7 @@ function tweetRand() {
 }
 
 // Controller for first-time / non-first-time runs
-if (false) {
+if (true) {
 	// Try to retweet something as soon as we run the program...
 	retweetLatest();
 	tweet();
@@ -204,41 +204,80 @@ const replyPossibilities = [
 	'..what? I am a bit old, can you explain this to me?',
 ];
 
-T.get('search/tweets', { q: `@margiebuns since:2020-10-31`, count: 1 }).then(function(response) {
-	// FETCHES RECENT TWEET AT @MARGIEBUNS
-	const targetUser = response.data.statuses[0].user.screen_name;
-	const tweetId = response.data.statuses[0].id_str;
+if (true) {
+	// SEARCH FOR RECENT TWEETS @MARGIEBUNS
+	T.get('search/tweets', { q: `@margiebuns since:2020-10-31`, count: 1 }).then(function(response) {
+		// FETCHES RECENT TWEET AT @MARGIEBUNS
+		const targetUser = response.data.statuses[0].user.screen_name;
+		const tweetId = response.data.statuses[0].id_str;
 
-	// THIS PART PROCESSES THE GIVEN TWEET, TRUNCATES AND ADDS ... TO MAKE IT SOUND
-	// LIKE GRANNY WAS READING IT
-	let precedingText = response.data.statuses[0].text;
-	if (precedingText) {
-		precedingText = precedingText.toLowerCase().replace('@margiebuns ', '');
-	}
-	precedingText = precedingText.slice(0, Math.floor((precedingText.length * 3) / 4));
-
-	// RANDOMIZE RESPONSE
-	let pChoice = Math.floor(Math.random() * 3);
-	let tweetText = `${precedingText}.. @${targetUser}${replyPossibilities[pChoice]}`;
-	// console.log('pChoice', pChoice);
-
-	console.log('@MargieBuns:', tweetText);
-
-	// REPLY TO THE TWEET WITH ABOVE CONTENT
-	T.post(
-		'statuses/update',
-		{
-			in_reply_to_status_id: tweetId,
-			status: tweetText,
-		},
-		function(error, response) {
-			if (response) {
-				console.log('Success! Check your bot, it should have tweeted something.');
-			}
-			// If there was an error with our Twitter call, we print it out here.
-			if (error) {
-				console.log('There was an error with Twitter:', error);
-			}
+		// THIS PART PROCESSES THE GIVEN TWEET, TRUNCATES AND ADDS ... TO MAKE IT SOUND
+		// LIKE GRANNY WAS READING IT
+		let precedingText = response.data.statuses[0].text;
+		if (precedingText) {
+			precedingText = precedingText.toLowerCase().replace('@margiebuns ', '');
 		}
-	);
-});
+		precedingText = precedingText.slice(0, Math.floor((precedingText.length * 3) / 4));
+
+		// RANDOMIZE RESPONSE
+		let pChoice = Math.floor(Math.random() * 3);
+		let tweetText = `${precedingText}.. @${targetUser}${replyPossibilities[pChoice]}`;
+		// console.log('pChoice', pChoice);
+
+		console.log('@MargieBuns:', tweetText);
+
+		// REPLY TO THE TWEET WITH ABOVE CONTENT
+		T.post(
+			'statuses/update',
+			{
+				in_reply_to_status_id: tweetId,
+				status: tweetText,
+			},
+			function(error, response) {
+				if (response) {
+					console.log('Success! Check your bot, it should have tweeted something.');
+				}
+				// If there was an error with our Twitter call, we print it out here.
+				if (error) {
+					console.log('There was an error with Twitter:', error);
+				}
+			}
+		);
+	});
+}
+
+if (true) {
+	// SCAN DM
+	T.get('direct_messages/events/list').then(function(response) {
+		// console.log(response.data.events);
+		// console.log(response.data.events[0].message_create.target);
+		// console.log(response.data.events[0].message_create.message_data.text);
+
+		// GET SENDERNAME
+		let senderId = response.data.events[0].message_create.sender_id;
+		let senderName = '@';
+
+		T.get('users/show', { user_id: senderId }).then(function(res) {
+			console.log(res.data.screen_name);
+			senderName += res.data.screen_name;
+
+			// TWEET HI PUBLICLY BECAUSE THAT'S WHAT GRANDMAS DO
+			// WHEN THEY DON'T KNOW HOW TO USER TWITTER
+			T.post(
+				'statuses/update',
+				{
+					status: `Oh I think I got something called a DM.. let me see.. oh hey it's from ${senderName}! Hi!! How are you?`,
+				},
+				function(error, response) {
+					if (response) {
+						console.log('Success! Check your bot, it should have tweeted something.');
+					}
+					// If there was an error with our Twitter call, we print it out here.
+					if (error) {
+						console.log('There was an error with Twitter:', error);
+					}
+				}
+			);
+		});
+	});
+}
