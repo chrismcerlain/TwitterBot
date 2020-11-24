@@ -7,18 +7,20 @@ var T = new Twit(require('./config.js'));
 // This is the URL of a search for the latest tweets on the '#downtonabbey' hashtag.
 var downtonAbbeySearch = {q: "#downtonabbey", count: 10, result_type: "mixed", lang: "en"}; 
 // This is the URL of a search for the latest tweets containing "Robert Patinson."
-var robinpatbatinbat = {q: "Robert Pattinson", count: 10, result_type: "mixed", lang: "en", author_id: "user.fields"};
+var robinpatbatinbat = {q: "Robert Pattinson", count: 10, result_type: "mixed", lang: "en", include_entities: "false"};
 
 // This function randomly determines a parametered search from the above list, and retweets it.
 function retweetLatest() {
 	var num = Math.floor(Math.random() * 2);
 	var keyword;
 	console.log(num);
+	//Randomly determines whether or not bot is retweeting from downtonabbey or Robert Pattinson
 	if (num > 0){
 		keyword = downtonAbbeySearch;
 	} else {
 		keyword = robinpatbatinbat;
 	}
+
 	T.get('search/tweets', keyword, function (error, data) {
 	  // log out any errors and responses
 	  console.log(error, data);
@@ -48,17 +50,30 @@ function retweetLatest() {
 //Function replies to a tweet that mentions "Robert Patinson" with a preset message.
 function loveRobPat(){
 	//Selects tweet pool to reply to
-	T.get('search/tweets', robinpatbatinbat, function(error, tweet){
-		console.log(error, tweet);
+	T.get('search/tweets', robinpatbatinbat, function(error, data){
+		console.log(error, data);
 		if(!error) {
-			var tweetId = tweet.statuses[0].id_str;
-			var tweetname = tweet.user.screen_name;
-			var name = 'charIottewunder';
-			T.post('statuses/update', {
-				in_reply_to_status_id: tweetId, 
-				status: '@' + tweetname + 'Oh bless his heart. ' + '@' + name + 
-				' Will you keep sending me more tweets about my favorite man Robert Pattinson?'}, 
-				function(error, response) {
+			//All the documentation for the reply
+			var rand = Math.floor(Math.random() * 10);
+			var tweetId = data.statuses[rand].id_str;
+			//Checks to make sure tweet isn't a retweet
+			console.log(tweetId.retweet)
+			while (tweetId.retweet) {
+				rand = rand +1
+				if (rand == 10){
+					return "Error from search..."
+				}
+			}
+			var tweetname = data.statuses[rand].user.screen_name;
+			//Reply object 
+			var reply = {
+				status: '@' + tweetname + " Oh bless his heart. We should make a Rob Pat fan club!",
+				in_reply_to_status_id: '' + tweetId
+			}
+			//Tweet method
+			T.post('statuses/update', reply, function(error, data, response) {
+				console.log(data);
+				console.log(tweetId.retweet);
 			if (response) {
 				console.log('Success! Check your bot, it should have tweeted something.')
 			}
@@ -67,6 +82,8 @@ function loveRobPat(){
 				console.log('There was an error with Twitter:', error);
 			}
 		})
+		} else {
+			console.log('There was an error with your loving of Rob Pat',error)
 		}
 	  })
 }
@@ -135,7 +152,7 @@ function tweetRand() {
 	var used = [0];
 	used.sort();
 	//Loop checks if tweet has already been tweeted. If the tweet has already been used it throws a tweet without a string and 
-	//the it passes without a tweet being sent.
+	//then it passes without a tweet being sent.
 	for (var i = 0; i < used.length; i++){
 		while(num == used[i]) {
 			num = 0
@@ -156,9 +173,10 @@ function tweetRand() {
 retweetLatest();
 tweet();
 loveRobPat();
+
 // ...and then every hour after that. Time here is in milliseconds, so
 // 1000 ms = 1 second, 1 sec * 60 = 1 min, 1 min * 60 = 1 hour --> 1000 * 60 * 60
-setInterval(retweetLatest, 1000 * 60 * 2);
-setInterval(tweet, 1000 * 60)
+setInterval(retweetLatest, 1000 * 60 * 60);
+setInterval(tweet, 1000 * 60 * 60)
 setInterval(loveRobPat, 1000 * 60 * 60);
 
