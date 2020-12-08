@@ -7,7 +7,13 @@ var T = new Twit(require('./config.js'));
 // This is the URL of a search for the latest tweets on the '#downtonabbey' hashtag.
 var downtonAbbeySearch = { q: '#downtonabbey', count: 10, result_type: 'mixed', lang: 'en' };
 // This is the URL of a search for the latest tweets containing "Robert Patinson."
-var robinpatbatinbat = {q: "Robert Pattinson", count: 10, result_type: "mixed", lang: "en", include_entities: "false"};
+var robinpatbatinbat = {
+	q: 'Robert Pattinson',
+	count: 10,
+	result_type: 'mixed',
+	lang: 'en',
+	include_entities: 'false',
+};
 
 // This function randomly determines a parametered search from the above list, and retweets it.
 function retweetLatest() {
@@ -15,72 +21,70 @@ function retweetLatest() {
 	var keyword;
 	console.log(num);
 	//Randomly determines whether or not bot is retweeting from downtonabbey or Robert Pattinson
-	if (num > 0){
+	if (num > 0) {
 		keyword = downtonAbbeySearch;
 	} else {
 		keyword = robinpatbatinbat;
 	}
 
-	T.get('search/tweets', keyword, function (error, data) {
-	  // log out any errors and responses
-	  console.log(error, data);
-	  // If our search request to the server had no errors...
-	  if (!error) {
-	  	// ...then we grab the ID of the tweet we want to retweet...
-		var retweetId = data.statuses[Math.floor(Math.random() * 10)].id_str;
-		if(retweetId != undefined){
-		// ...and then we tell Twitter we want to retweet it!
-		T.post('statuses/retweet/' + retweetId, { }, function (error, response) {
-			if (response) {
-				console.log('Success! Check your bot, it should have retweeted something.')
-			}else {
-				console.log('There was an error with your hashtag search:', error);
+	T.get('search/tweets', keyword, function(error, data) {
+		// log out any errors and responses
+		console.log(error, data);
+		// If our search request to the server had no errors...
+		if (!error) {
+			// ...then we grab the ID of the tweet we want to retweet...
+			var retweetId = data.statuses[Math.floor(Math.random() * 10)].id_str;
+			if (retweetId != undefined) {
+				// ...and then we tell Twitter we want to retweet it!
+				T.post('statuses/retweet/' + retweetId, {}, function(error, response) {
+					if (response) {
+						console.log('Success! Check your bot, it should have retweeted something.');
+					} else {
+						console.log('1 There was an error with your hashtag search:', error);
+					}
+				});
 			}
-		});
-	}
-	}
-});
-
+		}
+	});
 }
 
-		
 //Function replies to a tweet that mentions "Robert Patinson" with a preset message.
 function loveRobPat() {
 	//Selects tweet pool to reply to
-	T.get('search/tweets', robinpatbatinbat, function(error, data){
+	T.get('search/tweets', robinpatbatinbat, function(error, data) {
 		console.log(error, data);
-		if(!error) {
+		if (!error) {
 			//All the documentation for the reply
 			var rand = Math.floor(Math.random() * 10);
 			var tweetId = data.statuses[rand].id_str;
 			//Checks to make sure tweet isn't a retweet
-			console.log(tweetId.retweet)
+			console.log(tweetId.retweet);
 			while (tweetId.retweet) {
-				rand = rand +1
-				if (rand == 10){
-					return "Error from search..."
+				rand = rand + 1;
+				if (rand == 10) {
+					return 'Error from search...';
 				}
 			}
 			var tweetname = data.statuses[rand].user.screen_name;
-			//Reply object 
+			//Reply object
 			var reply = {
-				status: '@' + tweetname + " Oh bless his heart. We should make a Rob Pat fan club!",
-				in_reply_to_status_id: '' + tweetId
-			}
+				status: '@' + tweetname + ' Oh bless his heart. We should make a Rob Pat fan club!',
+				in_reply_to_status_id: '' + tweetId,
+			};
 			//Tweet method
 			T.post('statuses/update', reply, function(error, data, response) {
 				console.log(data);
 				console.log(tweetId.retweet);
-			if (response) {
-				console.log('Success! Check your bot, it should have tweeted something.')
-			}
-			// If there was an error with our Twitter call, we print it out here.
-			if (error) {
-				console.log('There was an error with Twitter:', error);
-			}
-		})
+				if (response) {
+					console.log('Success! Check your bot, it should have tweeted something.');
+				}
+				// If there was an error with our Twitter call, we print it out here.
+				if (error) {
+					console.log('2 There was an error with Twitter:', error);
+				}
+			});
 		} else {
-			console.log('There was an error with your loving of Rob Pat',error)
+			console.log('There was an error with your loving of Rob Pat', error);
 		}
 	});
 }
@@ -93,7 +97,7 @@ function tweet() {
 		}
 		// If there was an error with our Twitter call, we print it out here.
 		if (error) {
-			console.log('There was an error with Twitter:', error);
+			console.log('3 There was an error with Twitter:', error);
 		}
 	});
 }
@@ -165,11 +169,11 @@ function tweetRand() {
 	//Initializes array for used tweets.
 	var used = [0];
 	used.sort();
-	//Loop checks if tweet has already been tweeted. If the tweet has already been used it throws a tweet without a string and 
+	//Loop checks if tweet has already been tweeted. If the tweet has already been used it throws a tweet without a string and
 	//then it passes without a tweet being sent.
-	for (var i = 0; i < used.length; i++){
-		while(num == used[i]) {
-			num = 0
+	for (var i = 0; i < used.length; i++) {
+		while (num == used[i]) {
+			num = 0;
 		}
 	}
 	//Prints the num to the console for debugging reasons.
@@ -238,7 +242,7 @@ if (true) {
 				}
 				// If there was an error with our Twitter call, we print it out here.
 				if (error) {
-					console.log('There was an error with Twitter:', error);
+					console.log('4 There was an error with Twitter:', targetUser, tweetId, error);
 				}
 			}
 		);
@@ -257,7 +261,7 @@ if (true) {
 		let senderName = '@';
 
 		T.get('users/show', { user_id: senderId }).then(function(res) {
-			console.log(res.data.screen_name);
+			console.log('DM log', senderId, res.data.screen_name, response.data);
 			senderName += res.data.screen_name;
 
 			// TWEET HI PUBLICLY BECAUSE THAT'S WHAT GRANDMAS DO
@@ -273,12 +277,10 @@ if (true) {
 					}
 					// If there was an error with our Twitter call, we print it out here.
 					if (error) {
-						console.log('There was an error with Twitter:', error);
+						console.log('5 There was an error with Twitter:', error);
 					}
 				}
 			);
 		});
 	});
 }
-
-
